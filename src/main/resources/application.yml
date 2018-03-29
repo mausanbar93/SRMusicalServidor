@@ -1,0 +1,39 @@
+# CONSTANTES PARA MANEJO DE SEGURIDAD
+constantes:
+  # Constantes de autenticación
+  ESTANDAR_TIEMPO: 60000
+  TIEMPO_SESION: 720
+
+# Spring properties
+spring:  
+  application:
+     name: srmusical
+  datasource:
+     url: jdbc:mysql://localhost:3306/sr_musical
+     username: root
+     password: 
+     maxmActive: 20
+     maxIdle: 10 
+     maxWait: -1
+     testOnBorrow: true
+     validationQuery: select 1
+     driver-class-name: com.mysql.jdbc.Driver
+  
+  jackson:
+        serialization:
+            fail-on-empty-beans: false
+  jpa:
+    database: MYSQL
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect
+        current_session_context_class: org.springframework.orm.hibernate4.SpringSessionContext
+
+server:
+  contextPath: /srmusical
+  port: 8080   # HTTP (Tomcat) port
+logging:
+  level:
+    org.exampledriven.eureka.customer.shared.CustomerServiceFeignClient: FULL
+    org.exampledriven.eureka: DEBUG
