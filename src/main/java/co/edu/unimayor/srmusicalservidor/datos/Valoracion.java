@@ -1,5 +1,5 @@
 package co.edu.unimayor.srmusicalservidor.datos;
-// Generated 29/03/2018 01:10:35 PM by Hibernate Tools 4.3.1
+// Generated 1/04/2018 10:42:15 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +24,6 @@ public class Valoracion implements java.io.Serializable {
     private String nombre;
     private boolean habilitado;
     private Set<CancionUsuarioValoracion> cancionUsuarioValoracions = new HashSet<CancionUsuarioValoracion>(0);
-    private Set<Cancion> cancions = new HashSet<Cancion>(0);
 
     public Valoracion() {
     }
@@ -34,11 +33,10 @@ public class Valoracion implements java.io.Serializable {
         this.habilitado = habilitado;
     }
 
-    public Valoracion(String nombre, boolean habilitado, Set<CancionUsuarioValoracion> cancionUsuarioValoracions, Set<Cancion> cancions) {
+    public Valoracion(String nombre, boolean habilitado, Set<CancionUsuarioValoracion> cancionUsuarioValoracions) {
         this.nombre = nombre;
         this.habilitado = habilitado;
         this.cancionUsuarioValoracions = cancionUsuarioValoracions;
-        this.cancions = cancions;
     }
 
     @Id
@@ -79,16 +77,6 @@ public class Valoracion implements java.io.Serializable {
 
     public void setCancionUsuarioValoracions(Set<CancionUsuarioValoracion> cancionUsuarioValoracions) {
         this.cancionUsuarioValoracions = cancionUsuarioValoracions;
-    }
-
-    @XmlTransient
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "valoracion")
-    public Set<Cancion> getCancions() {
-        return this.cancions;
-    }
-
-    public void setCancions(Set<Cancion> cancions) {
-        this.cancions = cancions;
     }
 
 }

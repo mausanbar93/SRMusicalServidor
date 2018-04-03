@@ -54,10 +54,10 @@ public class SeguridadControlador {
 
     @JsonRequestMappingUtil("login")
     public @ResponseBody
-    Map<String, Object> validarLogin(@RequestParam("username") String username, @RequestParam("password") String password,
+    Map<String, Object> validarLogin(@RequestParam("cuenta") String cuenta, @RequestParam("contrasena") String contrasena,
             HttpServletRequest request, HttpServletResponse response) {
         try {
-            List<UsuarioDTO> respuesta = usuarioservicio.login(username, password);
+            List<UsuarioDTO> respuesta = usuarioservicio.login(cuenta, contrasena);
             request.getSession().setMaxInactiveInterval(172000);
             if (respuesta != null) {
                 if (respuesta.get(0).isHabilitado()) {

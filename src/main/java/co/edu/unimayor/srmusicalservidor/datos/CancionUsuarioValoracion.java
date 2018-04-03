@@ -1,5 +1,6 @@
 package co.edu.unimayor.srmusicalservidor.datos;
-// Generated 29/03/2018 01:10:35 PM by Hibernate Tools 4.3.1
+// Generated 1/04/2018 10:42:15 PM by Hibernate Tools 4.3.1
+
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;

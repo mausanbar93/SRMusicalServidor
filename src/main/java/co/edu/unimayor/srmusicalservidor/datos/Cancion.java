@@ -1,5 +1,5 @@
 package co.edu.unimayor.srmusicalservidor.datos;
-// Generated 29/03/2018 01:10:35 PM by Hibernate Tools 4.3.1
+// Generated 1/04/2018 10:42:15 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,41 +27,58 @@ public class Cancion implements java.io.Serializable {
     private Estado estadoByEstadoApiTextProcessing;
     private Estado estadoByEstadoApiSentiment140;
     private Estado estadoByEstadoApiSentiment;
-    private Valoracion valoracion;
+    private Estado estadoByEstadoReferencia;
     private String artista;
     private String titulo;
     private String letra;
     private String api;
-    private String genero;
-    private Integer numeroVisualizacion;
-    private Integer duracionSegundo;
+    private int rankingBillboard;
+    private int semanaBillboard;
+    private String url;
+    private int numeroVisualizacion;
+    private int duracionSegundo;
+    private double valoracionReferencia;
     private boolean habilitado;
     private Set<CancionUsuarioValoracion> cancionUsuarioValoracions = new HashSet<CancionUsuarioValoracion>(0);
 
     public Cancion() {
     }
 
-    public Cancion(String artista, String titulo, String letra, String api, boolean habilitado) {
-        this.artista = artista;
-        this.titulo = titulo;
-        this.letra = letra;
-        this.api = api;
-        this.habilitado = habilitado;
-    }
-
-    public Cancion(Estado estadoByEstadoApiRepustate, Estado estadoByEstadoApiTextProcessing, Estado estadoByEstadoApiSentiment140, Estado estadoByEstadoApiSentiment, Valoracion valoracion, String artista, String titulo, String letra, String api, String genero, Integer numeroVisualizacion, Integer duracionSegundo, boolean habilitado, Set<CancionUsuarioValoracion> cancionUsuarioValoracions) {
+    public Cancion(Estado estadoByEstadoApiRepustate, Estado estadoByEstadoApiTextProcessing, Estado estadoByEstadoApiSentiment140, Estado estadoByEstadoApiSentiment, Estado estadoByEstadoReferencia, String artista, String titulo, String letra, String api, int rankingBillboard, int semanaBillboard, String url, int numeroVisualizacion, int duracionSegundo, double valoracionReferencia, boolean habilitado) {
         this.estadoByEstadoApiRepustate = estadoByEstadoApiRepustate;
         this.estadoByEstadoApiTextProcessing = estadoByEstadoApiTextProcessing;
         this.estadoByEstadoApiSentiment140 = estadoByEstadoApiSentiment140;
         this.estadoByEstadoApiSentiment = estadoByEstadoApiSentiment;
-        this.valoracion = valoracion;
+        this.estadoByEstadoReferencia = estadoByEstadoReferencia;
         this.artista = artista;
         this.titulo = titulo;
         this.letra = letra;
         this.api = api;
-        this.genero = genero;
+        this.rankingBillboard = rankingBillboard;
+        this.semanaBillboard = semanaBillboard;
+        this.url = url;
         this.numeroVisualizacion = numeroVisualizacion;
         this.duracionSegundo = duracionSegundo;
+        this.valoracionReferencia = valoracionReferencia;
+        this.habilitado = habilitado;
+    }
+
+    public Cancion(Estado estadoByEstadoApiRepustate, Estado estadoByEstadoApiTextProcessing, Estado estadoByEstadoApiSentiment140, Estado estadoByEstadoApiSentiment, Estado estadoByEstadoReferencia, String artista, String titulo, String letra, String api, int rankingBillboard, int semanaBillboard, String url, int numeroVisualizacion, int duracionSegundo, double valoracionReferencia, boolean habilitado, Set<CancionUsuarioValoracion> cancionUsuarioValoracions) {
+        this.estadoByEstadoApiRepustate = estadoByEstadoApiRepustate;
+        this.estadoByEstadoApiTextProcessing = estadoByEstadoApiTextProcessing;
+        this.estadoByEstadoApiSentiment140 = estadoByEstadoApiSentiment140;
+        this.estadoByEstadoApiSentiment = estadoByEstadoApiSentiment;
+        this.estadoByEstadoReferencia = estadoByEstadoReferencia;
+        this.artista = artista;
+        this.titulo = titulo;
+        this.letra = letra;
+        this.api = api;
+        this.rankingBillboard = rankingBillboard;
+        this.semanaBillboard = semanaBillboard;
+        this.url = url;
+        this.numeroVisualizacion = numeroVisualizacion;
+        this.duracionSegundo = duracionSegundo;
+        this.valoracionReferencia = valoracionReferencia;
         this.habilitado = habilitado;
         this.cancionUsuarioValoracions = cancionUsuarioValoracions;
     }
@@ -79,7 +96,7 @@ public class Cancion implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_api_repustate")
+    @JoinColumn(name = "estado_api_repustate", nullable = false)
     public Estado getEstadoByEstadoApiRepustate() {
         return this.estadoByEstadoApiRepustate;
     }
@@ -89,7 +106,7 @@ public class Cancion implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_api_text_processing")
+    @JoinColumn(name = "estado_api_text_processing", nullable = false)
     public Estado getEstadoByEstadoApiTextProcessing() {
         return this.estadoByEstadoApiTextProcessing;
     }
@@ -99,7 +116,7 @@ public class Cancion implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_api_sentiment140")
+    @JoinColumn(name = "estado_api_sentiment140", nullable = false)
     public Estado getEstadoByEstadoApiSentiment140() {
         return this.estadoByEstadoApiSentiment140;
     }
@@ -109,7 +126,7 @@ public class Cancion implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "estado_api_sentiment")
+    @JoinColumn(name = "estado_api_sentiment", nullable = false)
     public Estado getEstadoByEstadoApiSentiment() {
         return this.estadoByEstadoApiSentiment;
     }
@@ -119,13 +136,13 @@ public class Cancion implements java.io.Serializable {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "valoracion")
-    public Valoracion getValoracion() {
-        return this.valoracion;
+    @JoinColumn(name = "estado_referencia", nullable = false)
+    public Estado getEstadoByEstadoReferencia() {
+        return this.estadoByEstadoReferencia;
     }
 
-    public void setValoracion(Valoracion valoracion) {
-        this.valoracion = valoracion;
+    public void setEstadoByEstadoReferencia(Estado estadoByEstadoReferencia) {
+        this.estadoByEstadoReferencia = estadoByEstadoReferencia;
     }
 
     @Column(name = "artista", nullable = false, length = 100)
@@ -155,7 +172,7 @@ public class Cancion implements java.io.Serializable {
         this.letra = letra;
     }
 
-    @Column(name = "api", nullable = false, length = 10)
+    @Column(name = "api", nullable = false, length = 20)
     public String getApi() {
         return this.api;
     }
@@ -164,31 +181,58 @@ public class Cancion implements java.io.Serializable {
         this.api = api;
     }
 
-    @Column(name = "genero", length = 20)
-    public String getGenero() {
-        return this.genero;
+    @Column(name = "ranking_billboard", nullable = false)
+    public int getRankingBillboard() {
+        return this.rankingBillboard;
     }
 
-    public void setGenero(String genero) {
-        this.genero = genero;
+    public void setRankingBillboard(int rankingBillboard) {
+        this.rankingBillboard = rankingBillboard;
     }
 
-    @Column(name = "numero_visualizacion")
-    public Integer getNumeroVisualizacion() {
+    @Column(name = "semana_billboard", nullable = false)
+    public int getSemanaBillboard() {
+        return this.semanaBillboard;
+    }
+
+    public void setSemanaBillboard(int semanaBillboard) {
+        this.semanaBillboard = semanaBillboard;
+    }
+
+    @Column(name = "url", nullable = false, length = 150)
+    public String getUrl() {
+        return this.url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Column(name = "numero_visualizacion", nullable = false)
+    public int getNumeroVisualizacion() {
         return this.numeroVisualizacion;
     }
 
-    public void setNumeroVisualizacion(Integer numeroVisualizacion) {
+    public void setNumeroVisualizacion(int numeroVisualizacion) {
         this.numeroVisualizacion = numeroVisualizacion;
     }
 
-    @Column(name = "duracion_segundo")
-    public Integer getDuracionSegundo() {
+    @Column(name = "duracion_segundo", nullable = false)
+    public int getDuracionSegundo() {
         return this.duracionSegundo;
     }
 
-    public void setDuracionSegundo(Integer duracionSegundo) {
+    public void setDuracionSegundo(int duracionSegundo) {
         this.duracionSegundo = duracionSegundo;
+    }
+
+    @Column(name = "valoracion_referencia", nullable = false, precision = 22, scale = 0)
+    public double getValoracionReferencia() {
+        return this.valoracionReferencia;
+    }
+
+    public void setValoracionReferencia(double valoracionReferencia) {
+        this.valoracionReferencia = valoracionReferencia;
     }
 
     @Column(name = "habilitado", nullable = false)

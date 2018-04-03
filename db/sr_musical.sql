@@ -29,27 +29,30 @@ CREATE TABLE `cancion` (
   `artista` varchar(100) NOT NULL,
   `titulo` varchar(100) NOT NULL,
   `letra` varchar(5000) NOT NULL,
-  `api` varchar(10) NOT NULL,
-  `genero` varchar(20) DEFAULT NULL,
-  `numero_visualizacion` int(11) DEFAULT NULL,
-  `valoracion` int(1) DEFAULT NULL,
-  `duracion_segundo` int(5) DEFAULT NULL,
-  `estado_api_sentiment` int(1) DEFAULT NULL,
-  `estado_api_sentiment140` int(1) DEFAULT NULL,
-  `estado_api_repustate` int(1) DEFAULT NULL,
-  `estado_api_text_processing` int(1) DEFAULT NULL,
+  `api` varchar(20) NOT NULL,
+  `ranking_billboard` int(2) NOT NULL,
+  `semana_billboard` int(3) NOT NULL,
+  `estado_referencia` int(1) NOT NULL,
+  `estado_api_sentiment` int(1) NOT NULL,
+  `estado_api_sentiment140` int(1) NOT NULL,
+  `estado_api_repustate` int(1) NOT NULL,
+  `estado_api_text_processing` int(1) NOT NULL,
+  `url` varchar(150) NOT NULL,
+  `numero_visualizacion` int(11) NOT NULL,
+  `duracion_segundo` int(5) NOT NULL,
+  `valoracion_referencia` double NOT NULL,
   `habilitado` bit(1) NOT NULL DEFAULT b'1',
   PRIMARY KEY (`id`),
+  KEY `FK_cancion_estado_id` (`estado_referencia`),
   KEY `FK_cancion_estado_api_sentiment_id` (`estado_api_sentiment`),
   KEY `FK_cancion_estado_api_sentiment140_id` (`estado_api_sentiment140`),
-  KEY `FK_cancion_estado_api_text_processing_id` (`estado_api_text_processing`),
   KEY `FK_cancion_estado_api_repustate_id` (`estado_api_repustate`),
-  KEY `FK_cancion_valoracion_id` (`valoracion`),
+  KEY `FK_cancion_estado_api_text_processing_id` (`estado_api_text_processing`),
   CONSTRAINT `FK_cancion_estado_api_repustate_id` FOREIGN KEY (`estado_api_repustate`) REFERENCES `estado` (`id`),
   CONSTRAINT `FK_cancion_estado_api_sentiment140_id` FOREIGN KEY (`estado_api_sentiment140`) REFERENCES `estado` (`id`),
   CONSTRAINT `FK_cancion_estado_api_sentiment_id` FOREIGN KEY (`estado_api_sentiment`) REFERENCES `estado` (`id`),
   CONSTRAINT `FK_cancion_estado_api_text_processing_id` FOREIGN KEY (`estado_api_text_processing`) REFERENCES `estado` (`id`),
-  CONSTRAINT `FK_cancion_valoracion_id` FOREIGN KEY (`valoracion`) REFERENCES `valoracion` (`id`)
+  CONSTRAINT `FK_cancion_estado_id` FOREIGN KEY (`estado_referencia`) REFERENCES `estado` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -100,7 +103,7 @@ DROP TABLE IF EXISTS `estado`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `estado` (
   `id` int(1) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(10) NOT NULL,
+  `nombre` varchar(25) NOT NULL,
   `habilitado` bit(1) NOT NULL DEFAULT b'1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
@@ -112,7 +115,7 @@ CREATE TABLE `estado` (
 
 LOCK TABLES `estado` WRITE;
 /*!40000 ALTER TABLE `estado` DISABLE KEYS */;
-INSERT INTO `estado` VALUES (1,'positiva',''),(2,'neutral',''),(3,'negativa','');
+INSERT INTO `estado` VALUES (1,'Emocion Positiva',''),(2,'Emocion Neutral',''),(3,'Emocion Negativa','');
 /*!40000 ALTER TABLE `estado` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,7 +139,7 @@ CREATE TABLE `usuario` (
   `fecha_nacimiento` date DEFAULT NULL,
   `habilitado` bit(1) NOT NULL DEFAULT b'1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 AVG_ROW_LENGTH=8192;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,6 +148,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` VALUES (1,'admin','1234','Pepito','Perez','Administrador','pepito.perez@yopmail.com',1234567890,'av centenario # 15-21','1993-03-16',''),(2,'cliente','1234','Ana','Lara','Cliente','ana.lara@yopmail.com',987654321,'car 45 # 87-102','2000-12-31',''),(3,'pedro','Pedro1234@','Pedro','Velez','Cliente','',NULL,'',NULL,'');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -190,4 +194,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-29 18:21:03
+-- Dump completed on 2018-04-02 21:03:01

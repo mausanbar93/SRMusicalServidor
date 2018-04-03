@@ -7,6 +7,7 @@ package co.edu.unimayor.srmusicalservidor.servicio;
 
 import co.edu.unimayor.srmusicalservidor.datos.Usuario;
 import co.edu.unimayor.srmusicalservidor.datos.dto.UsuarioDTO;
+import co.edu.unimayor.srmusicalservidor.datos.util.AuthUtil;
 import co.edu.unimayor.srmusicalservidor.repositorio.UsuarioRepositorio;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,7 +51,7 @@ public class UsuarioServicio {
             UsuarioDTO usuario;
             if (lista.size() > 0) {
                 for (Usuario user : lista) {
-                    if (user.isHabilitado()) {
+                    if (user.isHabilitado() && !user.getId().equals(AuthUtil.getCurrentUser().getId())) {
                         usuario = new UsuarioDTO(user);
                         respuesta.add(usuario);
                     }

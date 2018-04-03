@@ -1,5 +1,5 @@
 package co.edu.unimayor.srmusicalservidor.datos;
-// Generated 29/03/2018 01:10:35 PM by Hibernate Tools 4.3.1
+// Generated 1/04/2018 10:42:15 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +27,7 @@ public class Estado implements java.io.Serializable {
     private Set<Cancion> cancionsForEstadoApiTextProcessing = new HashSet<Cancion>(0);
     private Set<Cancion> cancionsForEstadoApiSentiment140 = new HashSet<Cancion>(0);
     private Set<Cancion> cancionsForEstadoApiSentiment = new HashSet<Cancion>(0);
+    private Set<Cancion> cancionsForEstadoReferencia = new HashSet<Cancion>(0);
 
     public Estado() {
     }
@@ -36,13 +37,14 @@ public class Estado implements java.io.Serializable {
         this.habilitado = habilitado;
     }
 
-    public Estado(String nombre, boolean habilitado, Set<Cancion> cancionsForEstadoApiRepustate, Set<Cancion> cancionsForEstadoApiTextProcessing, Set<Cancion> cancionsForEstadoApiSentiment140, Set<Cancion> cancionsForEstadoApiSentiment) {
+    public Estado(String nombre, boolean habilitado, Set<Cancion> cancionsForEstadoApiRepustate, Set<Cancion> cancionsForEstadoApiTextProcessing, Set<Cancion> cancionsForEstadoApiSentiment140, Set<Cancion> cancionsForEstadoApiSentiment, Set<Cancion> cancionsForEstadoReferencia) {
         this.nombre = nombre;
         this.habilitado = habilitado;
         this.cancionsForEstadoApiRepustate = cancionsForEstadoApiRepustate;
         this.cancionsForEstadoApiTextProcessing = cancionsForEstadoApiTextProcessing;
         this.cancionsForEstadoApiSentiment140 = cancionsForEstadoApiSentiment140;
         this.cancionsForEstadoApiSentiment = cancionsForEstadoApiSentiment;
+        this.cancionsForEstadoReferencia = cancionsForEstadoReferencia;
     }
 
     @Id
@@ -57,7 +59,7 @@ public class Estado implements java.io.Serializable {
         this.id = id;
     }
 
-    @Column(name = "nombre", nullable = false, length = 10)
+    @Column(name = "nombre", nullable = false, length = 25)
     public String getNombre() {
         return this.nombre;
     }
@@ -113,6 +115,16 @@ public class Estado implements java.io.Serializable {
 
     public void setCancionsForEstadoApiSentiment(Set<Cancion> cancionsForEstadoApiSentiment) {
         this.cancionsForEstadoApiSentiment = cancionsForEstadoApiSentiment;
+    }
+
+    @XmlTransient
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "estadoByEstadoReferencia")
+    public Set<Cancion> getCancionsForEstadoReferencia() {
+        return this.cancionsForEstadoReferencia;
+    }
+
+    public void setCancionsForEstadoReferencia(Set<Cancion> cancionsForEstadoReferencia) {
+        this.cancionsForEstadoReferencia = cancionsForEstadoReferencia;
     }
 
 }
