@@ -3,6 +3,7 @@ constantes:
   # Constantes de autenticación
   ESTANDAR_TIEMPO: 60000
   TIEMPO_SESION: 720
+  URLSERVIDORCANCIONES: http://localhost:8080/songs/
 
 # Spring properties
 spring:  
@@ -32,7 +33,7 @@ spring:
 
 server:
   contextPath: /srmusical
-  port: 8080   # HTTP (Tomcat) port
+  port: 8000   # HTTP (Tomcat) port
 logging:
   level:
     org.exampledriven.eureka.customer.shared.CustomerServiceFeignClient: FULL
