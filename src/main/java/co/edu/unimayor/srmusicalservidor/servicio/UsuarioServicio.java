@@ -10,7 +10,6 @@ import co.edu.unimayor.srmusicalservidor.datos.dto.UsuarioDTO;
 import co.edu.unimayor.srmusicalservidor.datos.util.AuthUtil;
 import co.edu.unimayor.srmusicalservidor.repositorio.UsuarioRepositorio;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +55,7 @@ public class UsuarioServicio {
                         respuesta.add(usuario);
                     }
                 }
-                respuesta.sort(Comparator.comparingInt(UsuarioDTO::getId).reversed());
+                //respuesta.sort(Comparator.comparingInt(UsuarioDTO::getId).reversed());
                 return respuesta;
             } else {
                 return null;

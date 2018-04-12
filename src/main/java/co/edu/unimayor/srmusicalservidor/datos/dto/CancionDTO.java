@@ -1,5 +1,5 @@
 /**
- * UsuarioDTO.java
+ * CancionDTO.java
  *
  * Creada el 7/10/2017, 01:04:15 AM
  *

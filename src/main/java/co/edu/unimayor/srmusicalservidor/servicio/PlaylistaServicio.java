@@ -29,9 +29,12 @@ public class PlaylistaServicio {
         try {
             List<PlaylistaDTO> respuesta = playlistarepositorio.listarCancionesUsuario(usuario);
             if (respuesta.size() > 0) {
-                respuesta.forEach((playlistaDTO) -> {
+                for(PlaylistaDTO playlistaDTO: respuesta){
                     playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES+playlistaDTO.getEstado()+"/"+playlistaDTO.getId()+".mp3");
-                });
+                }
+//                respuesta.forEach((playlistaDTO) -> {
+//                    playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES+playlistaDTO.getEstado()+"/"+playlistaDTO.getId()+".mp3");
+//                });
                 return respuesta;
             } else {
                 return null;

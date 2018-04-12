@@ -14,10 +14,12 @@
 
 package co.edu.unimayor.srmusicalservidor;
 
+import co.edu.unimayor.srmusicalservidor.servicio.ClasificadorNBMusicalServicio;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
 
 /**
  * 
@@ -34,6 +36,11 @@ public class SRMusicalMain extends SpringBootServletInitializer{
      */
     public static void main(String[] args) {
        SpringApplication.run(SRMusicalMain.class, args);
+    }
+    
+    @Bean
+    public ClasificadorNBMusicalServicio gestorService() {
+        return new ClasificadorNBMusicalServicio();
     }
 
 }

@@ -74,11 +74,12 @@ public class CancionServicio {
                             String valor = entrada_s_item.getValue().toString().replaceAll("\"", "");
                             switch (clave) {
                                 case "letra":
-                                    if(valor.contains("1409612408028")){
+                                    if (valor.contains("1409612408028")) {
                                         String expresion = "\\n...\\n\\n******* This Lyrics is NOT for Commercial use *******\\n(1409612408028)";
-                                        valor=valor.substring(0, valor.length()-expresion.length());
-                                        valor=valor.replaceAll("\n", "<br>").replaceAll("\\u00fa", "ú").replaceAll("\\u00ed", "í");
-                                    }                                  
+                                        valor = valor.substring(0, valor.length() - expresion.length());
+                                        valor = valor.replaceAll("/\n\n", "<br>").replaceAll("/\n", "<br>").replaceAll("/\\u00fa", "ú").replaceAll("/\\u00ed", "í");
+                                        //valor = valor.replaceAll("/\\u00fa", "ú").replaceAll("/\\u00ed", "í");
+                                    }
                                     cancion.setLetra(valor);
                                     break;
                                 case "api":
@@ -100,44 +101,39 @@ public class CancionServicio {
                                     cancion.setUrl(valor);
                                     break;
                                 case "visualizacion":
-                                    cancion.setNumeroVisualizacion(Integer.parseInt(valor));
+                                    cancion.setNumeroVisualizacion(!valor.equals("") ? Integer.parseInt(valor) : 0);
                                     break;
                                 case "duracion":
-                                    cancion.setDuracionSegundo(Integer.parseInt(valor));
+                                    cancion.setDuracionSegundo(!valor.equals("") ? Integer.parseInt(valor) : 0);
                                     break;
                                 case "valoracion":
-                                    cancion.setValoracionReferencia(Double.parseDouble(valor));
+                                    cancion.setValoracionReferencia(!valor.equals("") ? Double.parseDouble(valor) : 0);
                                     break;
-                                case "estado":
-                                    {
-                                        Estado est = estadorepositorio.findNombre(valor);
-                                        cancion.setEstadoByEstadoReferencia(est);
-                                        break;
-                                    }
-                                case "sentiment":
-                                    {
-                                        Estado est = estadorepositorio.findNombre(valor);
-                                        cancion.setEstadoByEstadoApiSentiment(est);
-                                        break;
-                                    }
-                                case "sentiment140":
-                                    {
-                                        Estado est = estadorepositorio.findNombre(valor);
-                                        cancion.setEstadoByEstadoApiSentiment140(est);
-                                        break;
-                                    }
-                                case "repustate":
-                                    {
-                                        Estado est = estadorepositorio.findNombre(valor);
-                                        cancion.setEstadoByEstadoApiRepustate(est);
-                                        break;
-                                    }
-                                case "text_processing":
-                                    {
-                                        Estado est = estadorepositorio.findNombre(valor);
-                                        cancion.setEstadoByEstadoApiTextProcessing(est);
-                                        break;
-                                    }
+                                case "estado": {
+                                    Estado est = estadorepositorio.findNombre(valor);
+                                    cancion.setEstadoByEstadoReferencia(est != null ? est : null);
+                                    break;
+                                }
+                                case "sentiment": {
+                                    Estado est = estadorepositorio.findNombre(valor);
+                                    cancion.setEstadoByEstadoApiSentiment(est != null ? est : null);
+                                    break;
+                                }
+                                case "sentiment140": {
+                                    Estado est = estadorepositorio.findNombre(valor);
+                                    cancion.setEstadoByEstadoApiSentiment140(est != null ? est : null);
+                                    break;
+                                }
+                                case "repustate": {
+                                    Estado est = estadorepositorio.findNombre(valor);
+                                    cancion.setEstadoByEstadoApiRepustate(est != null ? est : null);
+                                    break;
+                                }
+                                case "text_processing": {
+                                    Estado est = estadorepositorio.findNombre(valor);
+                                    cancion.setEstadoByEstadoApiTextProcessing(est != null ? est : null);
+                                    break;
+                                }
                                 default:
                                     break;
                             }

@@ -14,6 +14,7 @@
 package co.edu.unimayor.srmusicalservidor.repositorio;
 
 import co.edu.unimayor.srmusicalservidor.datos.Cancion;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -23,5 +24,17 @@ import org.springframework.data.repository.CrudRepository;
  * @date 23/09/2017
  */
 public interface CancionRepositorio extends CrudRepository<Cancion, Integer> {
+
+    @Query(value = "SELECT AVG(c.ranking_billboard) AS media_ranking FROM cancion c", nativeQuery = true)
+    public Double mediaRanking();
+    
+    @Query(value = "SELECT AVG(c.semana_billboard) AS media_semanas FROM cancion c", nativeQuery = true)
+    public Double mediaSemanas();
+    
+    @Query(value = "SELECT AVG(c.numero_visualizacion) AS media_visualizacion FROM cancion c", nativeQuery = true)
+    public Double mediaVisualizacion();
+    
+    @Query(value = "SELECT AVG(c.valoracion_referencia) AS media_valoracion FROM cancion c", nativeQuery = true)
+    public Double mediaValoracion();
 
 }

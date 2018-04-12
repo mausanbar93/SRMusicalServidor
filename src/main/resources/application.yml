@@ -4,6 +4,10 @@ constantes:
   ESTANDAR_TIEMPO: 60000
   TIEMPO_SESION: 720
   URLSERVIDORCANCIONES: http://localhost:8080/songs/
+  DISCRETIZAR_RANKING: 10
+  DISCRETIZAR_SEMANAS: 10
+  DISCRETIZAR_VISUALIZACIONES: 10
+  DISCRETIZAR_VALORACION: 3
 
 # Spring properties
 spring:  
@@ -33,7 +37,7 @@ spring:
 
 server:
   contextPath: /srmusical
-  port: 8000   # HTTP (Tomcat) port
+  port: 8080   # HTTP (Tomcat) port
 logging:
   level:
     org.exampledriven.eureka.customer.shared.CustomerServiceFeignClient: FULL
