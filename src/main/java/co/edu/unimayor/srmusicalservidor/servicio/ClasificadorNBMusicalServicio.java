@@ -15,6 +15,7 @@ package co.edu.unimayor.srmusicalservidor.servicio;
 
 import co.edu.unimayor.srmusicalservidor.datos.dto.PrediccionDTO;
 import co.edu.unimayor.srmusicalservidor.datos.dto.PropiedadesMusicalesDTO;
+import co.edu.unimayor.srmusicalservidor.datos.dto.PropiedadesMusicalesEstadoDTO;
 import co.edu.unimayor.srmusicalservidor.repositorio.CancionRepositorio;
 import co.edu.unimayor.srmusicalservidor.repositorio.ClasificadorNBMusicalRepositorio;
 import java.util.ArrayList;
@@ -22,9 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -53,6 +52,12 @@ public class ClasificadorNBMusicalServicio {
     private Integer DISCRETIZAR_VISUALIZACIONES;
     @Value("${constantes.DISCRETIZAR_VALORACION}")
     private Integer DISCRETIZAR_VALORACION;
+    @Value("${constantes.EMOCION_POSITIVA}")
+    private String EMOCION_POSITIVA;
+    @Value("${constantes.EMOCION_NEUTRAL}")
+    private String EMOCION_NEUTRAL;
+    @Value("${constantes.EMOCION_NEGATIVA}")
+    private String EMOCION_NEGATIVA;
 
     @Autowired
     private ClasificadorNBMusicalRepositorio clasificadorNBMusicalRepositorio;
@@ -72,11 +77,14 @@ public class ClasificadorNBMusicalServicio {
     public ClasificadorNBMusicalServicio() {
     }
 
-    public ClasificadorNBMusicalServicio(Integer DISCRETIZAR_RANKING, Integer DISCRETIZAR_SEMANAS, Integer DISCRETIZAR_VISUALIZACIONES, Integer DISCRETIZAR_VALORACION, ClasificadorNBMusicalRepositorio clasificadorNBMusicalRepositorio, CancionRepositorio cancionRepositorio, Attribute atributo_ranking, Attribute atributo_semanas, Attribute atributo_visualizacion, Attribute atributo_clase, FastVector fv_ranking, FastVector fv_semanas, FastVector fv_visualizacion, FastVector clase, FastVector vectorAtributos, NaiveBayes cModel, Instances isTrainingSet, Evaluation eTest, FastVector pred, List<int[]> datosValorados, List<int[]> datosNoValorados) {
+    public ClasificadorNBMusicalServicio(Integer DISCRETIZAR_RANKING, Integer DISCRETIZAR_SEMANAS, Integer DISCRETIZAR_VISUALIZACIONES, Integer DISCRETIZAR_VALORACION, String EMOCION_POSITIVA, String EMOCION_NEUTRAL, String EMOCION_NEGATIVA, ClasificadorNBMusicalRepositorio clasificadorNBMusicalRepositorio, CancionRepositorio cancionRepositorio, Attribute atributo_ranking, Attribute atributo_semanas, Attribute atributo_visualizacion, Attribute atributo_clase, FastVector fv_ranking, FastVector fv_semanas, FastVector fv_visualizacion, FastVector clase, FastVector vectorAtributos, NaiveBayes cModel, Instances isTrainingSet, Evaluation eTest, FastVector pred, List<int[]> datosValorados, List<int[]> datosNoValorados) {
         this.DISCRETIZAR_RANKING = DISCRETIZAR_RANKING;
         this.DISCRETIZAR_SEMANAS = DISCRETIZAR_SEMANAS;
         this.DISCRETIZAR_VISUALIZACIONES = DISCRETIZAR_VISUALIZACIONES;
         this.DISCRETIZAR_VALORACION = DISCRETIZAR_VALORACION;
+        this.EMOCION_POSITIVA = EMOCION_POSITIVA;
+        this.EMOCION_NEUTRAL = EMOCION_NEUTRAL;
+        this.EMOCION_NEGATIVA = EMOCION_NEGATIVA;
         this.clasificadorNBMusicalRepositorio = clasificadorNBMusicalRepositorio;
         this.cancionRepositorio = cancionRepositorio;
         this.atributo_ranking = atributo_ranking;
@@ -141,7 +149,7 @@ public class ClasificadorNBMusicalServicio {
      *
      * @param usuario
      */
-    public void cargarConjuntoDatos(Integer usuario) {
+    public void cargarConjuntoDatosBasico(Integer usuario) {
         List<PropiedadesMusicalesDTO> listaV = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesValoradas(usuario);
         List<PropiedadesMusicalesDTO> listaNoV = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesNoValoradas(usuario);
         Double mediaRanking = cancionRepositorio.mediaRanking();
@@ -161,7 +169,7 @@ public class ClasificadorNBMusicalServicio {
         // valorados a weka
         Instance inst;
         for (int i = 0; i < datosValorados.size(); i++) {
-            inst = new Instance(4);
+            inst = new Instance(4) {};
             int temp[] = datosValorados.get(i);
             System.out.println("Mira vos " + Arrays.toString(temp));
             inst.setValue((Attribute) vectorAtributos.elementAt(0), "" + temp[1]);
@@ -194,8 +202,21 @@ public class ClasificadorNBMusicalServicio {
      * de entrenamiento, considerando el indice de stress (si) como parámetro de
      * entrada.
      *
+     * @param usuario
+     * @param estado
      */
-    public void cargarConjuntoDatos1() {
+    public void cargarConjuntoDatosIntermedio(Integer usuario, String estado) {
+        List<PropiedadesMusicalesEstadoDTO> listaV = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesEstadoValoradas(usuario, estado);
+        List<PropiedadesMusicalesEstadoDTO> listaNoV = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesEstadoNoValoradas(usuario, estado);
+        Double mediaRanking = cancionRepositorio.mediaRanking();
+        Double mediaSemanas = cancionRepositorio.mediaSemanas();
+        Double mediaVisualizacion = cancionRepositorio.mediaVisualizacion();
+
+        // Se cargan los registros que el usuario ha valorado o visualizado
+        datosValorados = discretizarPropiedadesMusicalesCancionesEstadoValoradas(listaV, mediaRanking, mediaSemanas, mediaVisualizacion, estado);
+        // Se cargan los registros que el usuario no ha valorado o visualizado
+        datosNoValorados = discretizarPropiedadesMusicalesCancionesEstadoNoValoradas(listaNoV, mediaRanking, mediaSemanas, mediaVisualizacion, estado);
+
         isTrainingSet = new Instances("Rel", vectorAtributos, (datosValorados.size() + datosNoValorados.size()));
         System.out.println("LA SUMA ES " + (datosValorados.size() + datosNoValorados.size()));
         isTrainingSet.setClassIndex(3);
@@ -231,59 +252,6 @@ public class ClasificadorNBMusicalServicio {
         System.out.println("El tam2 es " + isTrainingSet.numInstances());
     }
 
-    /**
-     * Método encargado de cargar el conjunto de datos (Carácteristicas
-     * musicales de los contenidos), almacenados en la base de datos al vector
-     * de entrenamiento, considerando el indice de stress (si) como parámetro de
-     * entrada.
-     *
-     * @param usu nombre de usuario con el cual se realizará la consulta a la
-     * base de datos (MySQL)
-     * @param est indice de stress obtenido con el dispositivo Heart Rate, a
-     * traves del servidor de contexto
-     * @throws Exception
-     */
-//    public void cargarConjuntoDatos2(String usu, String est, String esti) throws Exception {
-//        // Se cargan los registros que el usuario ha valorado o visualizado
-//        datosValorados = man_emo.getCaracteristicasMusicalessiest(usu, est, esti);
-//
-//        // Se cargan los registros que el usuario no ha valorado o visualizado
-//        datosNoValorados = man_emo.getCaracteristicasMusicales3(usu, est, esti);
-//
-//        isTrainingSet = new Instances("Rel", vectorAtributos, (datosValorados.size() + datosNoValorados.size()));
-//        System.out.println("LA SUMA ES " + (datosValorados.size() + datosNoValorados.size()));
-//        isTrainingSet.setClassIndex(3);
-//
-//        // Setencia mediante el cual se cargan el valor de los registros
-//        // valorados a weka
-//        Instance inst;
-//        for (int i = 0; i < datosValorados.size(); i++) {
-//            inst = new Instance(4);
-//            Integer temp[] = datosValorados.get(i);
-//            System.out.println("Mira vos " + Arrays.toString(temp));
-//            inst.setValue((Attribute) vectorAtributos.elementAt(0), "" + temp[1]);
-//            inst.setValue((Attribute) vectorAtributos.elementAt(1), "" + temp[2]);
-//            inst.setValue((Attribute) vectorAtributos.elementAt(2), "" + temp[3]);
-//            inst.setValue((Attribute) vectorAtributos.elementAt(3), "" + temp[4]);
-//            isTrainingSet.add(inst);
-//
-//        }
-//        System.out.println("El tam1 es " + isTrainingSet.numInstances());
-//
-//        // Setencia mediante el cual se cargan el valor de los registros no
-//        // valorados a weka
-//        Instance inst1;
-//        for (int i = 0; i < datosNoValorados.size(); i++) {
-//            inst1 = new Instance(4);
-//            Integer temp[] = datosNoValorados.get(i);
-//            System.out.println("Mira vos1 " + Arrays.toString(temp));
-//            inst1.setValue((Attribute) vectorAtributos.elementAt(0), "" + temp[1]);
-//            inst1.setValue((Attribute) vectorAtributos.elementAt(1), "" + temp[2]);
-//            inst1.setValue((Attribute) vectorAtributos.elementAt(2), "" + temp[3]);
-//            isTrainingSet.add(inst1);
-//        }
-//        System.out.println("El tam2 es " + isTrainingSet.numInstances());
-//    }
     /**
      * Método encargado de evaluar el modelo o clasificador (NaiveBayes)
      *
@@ -331,12 +299,15 @@ public class ClasificadorNBMusicalServicio {
      * porcentajes de valoración y el id asociado al contenido
      * @throws JSONException
      */
-    public String obtenerPrediccionesPositivas() throws JSONException {
+    public ArrayList<PrediccionDTO> obtenerPrediccionesPositivas() throws JSONException {
         // Cargar prediciones en una Lista de Arreglos
         pred = eTest.predictions();
+        System.out.println("***************************");
+        System.out.println("Numero de predicciones " + pred.size());
+        System.out.println("***************************");
 
-        String cadena = "";
-        ArrayList<PrediccionDTO> lista = new ArrayList<PrediccionDTO>();
+        String cadena;
+        ArrayList<PrediccionDTO> lista = new ArrayList<>();
         String tokens[];
         int cont = datosValorados.size();
         int cont1 = 0;
@@ -344,12 +315,9 @@ public class ClasificadorNBMusicalServicio {
 
         while (cont < (datosValorados.size() + datosNoValorados.size())) {
             cadena = pred.elementAt(cont).toString();
-            System.out.println("*************************");
-            System.out.println("Pred " + cadena);
-            System.out.println("*************************");
+            System.out.println((cont1 + 1) + ". Pred " + cadena);
 
             tokens = cadena.split(" ");
-            System.out.println("*****Tokens***************" + Arrays.toString(tokens));
             int temp[] = datosNoValorados.get(cont1);
 
             if (tokens[2].equals("1.0")) {
@@ -363,20 +331,21 @@ public class ClasificadorNBMusicalServicio {
             cont++;
             cont1++;
         }
+        System.out.println("***************************");
         Collections.sort(lista, Collections.reverseOrder());
-        return obtenerRespuesta(lista);
+        return lista;
     }
 
-    public String obtenerPredicciones(List<int[]> datosValorados, List<int[]> datosNoValorados) throws JSONException {
+    public ArrayList<PrediccionDTO> obtenerPredicciones() throws JSONException {
         // Cargar prediciones en una Lista de Arreglos
         pred = eTest.predictions();
-        System.out.println("*****************************************");
+        System.out.println("***************************");
         System.out.println("Numero de predicciones " + pred.size());
-        System.out.println("*****************************************");
+        System.out.println("***************************");
 
-        String cadena = "";
-        ArrayList<PrediccionDTO> lista = new ArrayList<PrediccionDTO>();
-        ArrayList<PrediccionDTO> lista1 = new ArrayList<PrediccionDTO>();
+        String cadena;
+        ArrayList<PrediccionDTO> lista = new ArrayList<>();
+        ArrayList<PrediccionDTO> lista1 = new ArrayList<>();
         String tokens[];
         int cont = 0;
         PrediccionDTO obj;
@@ -389,7 +358,6 @@ public class ClasificadorNBMusicalServicio {
             cadena = pred.elementAt(cont).toString();
             tokens = cadena.split(" ");
             int temp[] = datosValorados.get(cont);
-            System.out.println("*****Tokens*****" + Arrays.toString(tokens) + " ID->" + temp[0]);
             obj = new PrediccionDTO();
             if (tokens[2].equals("1.0")) {
                 obj.setPred("1");
@@ -406,9 +374,10 @@ public class ClasificadorNBMusicalServicio {
         // Registra segundo las prediciones con Pred('0')
         while (cont < datosValorados.size()) {
             cadena = pred.elementAt(cont).toString();
+            System.out.println((cont + 1) + ". Pred " + cadena);
+
             tokens = cadena.split(" ");
             int temp[] = datosValorados.get(cont);
-            System.out.println("*****Tokens*****" + Arrays.toString(tokens) + " ID->" + temp[0]);
             obj = new PrediccionDTO();
             if (tokens[2].equals("0.0")) {
                 obj.setPred("0");
@@ -419,41 +388,14 @@ public class ClasificadorNBMusicalServicio {
             }
             cont++;
         }
+        System.out.println("***************************");
         Collections.sort(lista1);
         lista.addAll(lista1);
-        return obtenerRespuesta(lista);
-    }
-
-    /**
-     * Método encargado de conformar el objetoJSON con las predicciones, a
-     * partir del ArrayList con los contenidos
-     *
-     * @param lista ArrayList de los objetos Contenido (Contenidos multimedia)
-     * con predicciones positivas
-     * @return mensaje con objetoJSON
-     * @throws JSONException
-     */
-    public String obtenerRespuesta(ArrayList<PrediccionDTO> lista) throws JSONException {
-        JSONArray jArray = new JSONArray();
-        JSONObject obj;
-
-        // Sentencia para fijar o escribir todas los resultados de predicciones
-        for (int j = 0; j < lista.size(); j++) {
-            obj = new JSONObject();
-            obj.put("id_contenido", lista.get(j).getId_contenido());
-            obj.put("0", lista.get(j).getProb0());
-            obj.put("1", lista.get(j).getProb1());
-            obj.put("pred", lista.get(j).getPred());
-            jArray.put(obj);
-        }
-
-        JSONObject mainObj = new JSONObject();
-        mainObj.put("canciones", jArray);
-        return mainObj.toString();
+        return lista;
     }
 
     public List<int[]> discretizarPropiedadesMusicalesCancionesValoradas(List<PropiedadesMusicalesDTO> lista, Double mediaRanking, Double mediaSemanas, Double mediaVisualizacion) {
-        List datosRetorno = new ArrayList<int[]>();
+        List datosRetorno = new ArrayList<>();
         Integer ranking, semanas, visualizacion, valoracion;
         System.out.println("************************************");
         System.out.println("******* CONTENIDOS VALORADOS *******");
@@ -483,7 +425,7 @@ public class ClasificadorNBMusicalServicio {
     }
 
     public List<int[]> discretizarPropiedadesMusicalesCancionesNoValoradas(List<PropiedadesMusicalesDTO> lista, Double mediaRanking, Double mediaSemanas, Double mediaVisualizacion) {
-        List datosRetorno = new ArrayList<int[]>();
+        List datosRetorno = new ArrayList<>();
         Integer ranking, semanas, visualizacion, valoracion;
         System.out.println("************************************");
         System.out.println("******* CONTENIDOS NO VALORADOS *******");
@@ -512,81 +454,78 @@ public class ClasificadorNBMusicalServicio {
         return datosRetorno;
     }
 
-//    public List<Integer[]> discretizarPropiedadesMusicalesCancionesEstadosValoradas(Integer usuario, String estado) {
-//        List datosRetorno = null;
-//        Integer ranking, semanas, visualizacion, valoracion;
-//        List<PropiedadesMusicalesEstadoDTO> lista = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesEstadoValoradas(usuario, estado);
-//        Double mediaRanking = cancionRepositorio.mediaRanking();
-//        Double mediaSemanas = cancionRepositorio.mediaSemanas();
-//        Double mediaVisualizacion = cancionRepositorio.mediaVisualizacion();
-//        System.out.println("************************************");
-//        System.out.println("******* CONTENIDOS VALORADOS *******");
-//        for (PropiedadesMusicalesEstadoDTO item : lista) {
-//            System.out.println("************************************");
-//            System.out.println("IdCancion: " + item.getId());
-//            System.out.println("Ranking: " + item.getRanking());
-//            System.out.println("Semanas: " + item.getSemanas());
-//            System.out.println("Visualización: " + item.getVisualizacion());
-//            System.out.println("Valoracion: " + item.getValoracion());
-//            System.out.println("Estado: " + item.getEstado());
-//
-//            ranking = item.getRanking() < mediaRanking * (DISCRETIZAR_RANKING / 100) ? 1 : 0;
-//            semanas = item.getSemanas() > mediaSemanas * (DISCRETIZAR_SEMANAS / 100) ? 1 : 0;
-//            visualizacion = item.getVisualizacion() > mediaVisualizacion * (DISCRETIZAR_VISUALIZACIONES / 100) ? 1 : 0;
-//            valoracion = item.getValoracion() > DISCRETIZAR_VALORACION ? 1 : 0;
-//
-//            System.out.println("Ranking-Discretizado: " + ranking);
-//            System.out.println("Semanas-Discretizado: " + semanas);
-//            System.out.println("Visualización-Discretizado: " + visualizacion);
-//            System.out.println("Valoracion-Discretizado: " + valoracion);
-//            Integer[] temp = {item.getId(), ranking, semanas, visualizacion, valoracion};
-//            if (estado.equals("Emocion Positiva") && item.getEstado().equals("Emocion Positiva")) {
-//                datosRetorno.add(temp);
-//            } else if (estado.equals("Emocion Neutral") && item.getEstado().equals("Emocion Neutral")) {
-//                datosRetorno.add(temp);
-//            } else if (estado.equals("Emocion Negativa") && item.getEstado().equals("Emocion Negativa")) {
-//                datosRetorno.add(temp);
-//            } else {
-//                System.out.println("La canción no tiene relación entre sus estados");
-//            }
-//        }
-//        System.out.println("*************** FIN ****************");
-//        System.out.println("************************************");
-//        return datosRetorno;
-//    }
-//
-//    public List<Integer[]> discretizarPropiedadesMusicalesCancionesEstadosNoValoradas(Integer usuario, String estado) {
-//        List datosRetorno = null;
-//        Integer ranking, semanas, visualizacion, valoracion;
-//        List<PropiedadesMusicalesEstadoDTO> lista = clasificadorNBMusicalRepositorio.obtenerPropiedadesMusicalesCancionesEstadoNoValoradas(usuario, estado);
-//        Double mediaRanking = cancionRepositorio.mediaRanking();
-//        Double mediaSemanas = cancionRepositorio.mediaSemanas();
-//        Double mediaVisualizacion = cancionRepositorio.mediaVisualizacion();
-//        System.out.println("************************************");
-//        System.out.println("******* CONTENIDOS NO VALORADOS *******");
-//        for (PropiedadesMusicalesEstadoDTO item : lista) {
-//            System.out.println("************************************");
-//            System.out.println("IdCancion: " + item.getId());
-//            System.out.println("Ranking: " + item.getRanking());
-//            System.out.println("Semanas: " + item.getSemanas());
-//            System.out.println("Visualización: " + item.getVisualizacion());
-//            System.out.println("Valoracion: " + item.getValoracion());
-//            System.out.println("Estado: " + item.getEstado());
-//
-//            ranking = item.getRanking() < mediaRanking * (DISCRETIZAR_RANKING / 100) ? 1 : 0;
-//            semanas = item.getSemanas() > mediaSemanas * (DISCRETIZAR_SEMANAS / 100) ? 1 : 0;
-//            visualizacion = item.getVisualizacion() > mediaVisualizacion * (DISCRETIZAR_VISUALIZACIONES / 100) ? 1 : 0;
-//            valoracion = item.getValoracion() > DISCRETIZAR_VALORACION ? 1 : 0;
-//
-//            System.out.println("Ranking-Discretizado: " + ranking);
-//            System.out.println("Semanas-Discretizado: " + semanas);
-//            System.out.println("Visualización-Discretizado: " + visualizacion);
-//            System.out.println("Valoracion-Discretizado: " + valoracion);
-//            Integer[] temp = {item.getId(), ranking, semanas, visualizacion, valoracion};
-//            datosRetorno.add(temp);
-//        }
-//        System.out.println("*************** FIN ****************");
-//        System.out.println("************************************");
-//        return datosRetorno;
-//    }
+    public List<int[]> discretizarPropiedadesMusicalesCancionesEstadoValoradas(List<PropiedadesMusicalesEstadoDTO> lista, Double mediaRanking, Double mediaSemanas, Double mediaVisualizacion, String estado) {
+        List datosRetorno = new ArrayList<>();
+        Integer ranking, semanas, visualizacion, valoracion;
+        System.out.println("************************************");
+        System.out.println("******* CONTENIDOS VALORADOS *******");
+        for (PropiedadesMusicalesEstadoDTO item : lista) {
+            System.out.println("************************************");
+            System.out.println("IdCancion: " + item.getId());
+            System.out.println("Ranking: " + item.getRanking());
+            System.out.println("Semanas: " + item.getSemanas());
+            System.out.println("Visualización: " + item.getVisualizacion());
+            System.out.println("Valoracion: " + item.getValoracion());
+            System.out.println("Estado: " + item.getEstado());
+
+            ranking = item.getRanking() < mediaRanking * (DISCRETIZAR_RANKING / 100) ? 1 : 0;
+            semanas = item.getSemanas() > mediaSemanas * (DISCRETIZAR_SEMANAS / 100) ? 1 : 0;
+            visualizacion = item.getVisualizacion() > mediaVisualizacion * (DISCRETIZAR_VISUALIZACIONES / 100) ? 1 : 0;
+            valoracion = item.getValoracion() > DISCRETIZAR_VALORACION ? 1 : 0;
+
+            System.out.println("Ranking-Discretizado: " + ranking);
+            System.out.println("Semanas-Discretizado: " + semanas);
+            System.out.println("Visualización-Discretizado: " + visualizacion);
+            System.out.println("Valoracion-Discretizado: " + valoracion);
+            int[] temp = {item.getId(), ranking, semanas, visualizacion, valoracion};
+            if (item.getEstado().equals(EMOCION_POSITIVA) && estado.equals(EMOCION_POSITIVA)) {
+                datosRetorno.add(temp);
+            } else if (item.getEstado().equals(EMOCION_NEUTRAL) && estado.equals(EMOCION_NEUTRAL)) {
+                datosRetorno.add(temp);
+            } else if (item.getEstado().equals(EMOCION_NEGATIVA) && estado.equals(EMOCION_NEGATIVA)) {
+                datosRetorno.add(temp);
+            }
+        }
+        System.out.println("*************** FIN ****************");
+        System.out.println("************************************");
+        return datosRetorno;
+    }
+
+    public List<int[]> discretizarPropiedadesMusicalesCancionesEstadoNoValoradas(List<PropiedadesMusicalesEstadoDTO> lista, Double mediaRanking, Double mediaSemanas, Double mediaVisualizacion, String estado) {
+        List datosRetorno = new ArrayList<>();
+        Integer ranking, semanas, visualizacion, valoracion;
+        System.out.println("************************************");
+        System.out.println("******* CONTENIDOS NO VALORADOS *******");
+        for (PropiedadesMusicalesEstadoDTO item : lista) {
+            System.out.println("************************************");
+            System.out.println("IdCancion: " + item.getId());
+            System.out.println("Ranking: " + item.getRanking());
+            System.out.println("Semanas: " + item.getSemanas());
+            System.out.println("Visualización: " + item.getVisualizacion());
+            System.out.println("Valoracion: " + item.getValoracion());
+            System.out.println("Estado: " + item.getEstado());
+
+            ranking = item.getRanking() < mediaRanking * (DISCRETIZAR_RANKING / 100) ? 1 : 0;
+            semanas = item.getSemanas() > mediaSemanas * (DISCRETIZAR_SEMANAS / 100) ? 1 : 0;
+            visualizacion = item.getVisualizacion() > mediaVisualizacion * (DISCRETIZAR_VISUALIZACIONES / 100) ? 1 : 0;
+            valoracion = item.getValoracion() > DISCRETIZAR_VALORACION ? 1 : 0;
+
+            System.out.println("Ranking-Discretizado: " + ranking);
+            System.out.println("Semanas-Discretizado: " + semanas);
+            System.out.println("Visualización-Discretizado: " + visualizacion);
+            System.out.println("Valoracion-Discretizado: " + valoracion);
+            int[] temp = {item.getId(), ranking, semanas, visualizacion, valoracion};
+            if (item.getEstado().equals(EMOCION_POSITIVA) && estado.equals(EMOCION_POSITIVA)) {
+                datosRetorno.add(temp);
+            } else if (item.getEstado().equals(EMOCION_NEUTRAL) && estado.equals(EMOCION_NEUTRAL)) {
+                datosRetorno.add(temp);
+            } else if (item.getEstado().equals(EMOCION_NEGATIVA) && estado.equals(EMOCION_NEGATIVA)) {
+                datosRetorno.add(temp);
+            }
+        }
+        System.out.println("*************** FIN ****************");
+        System.out.println("************************************");
+        return datosRetorno;
+    }
+
 }

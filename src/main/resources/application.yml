@@ -3,11 +3,15 @@ constantes:
   # Constantes de autenticación
   ESTANDAR_TIEMPO: 60000
   TIEMPO_SESION: 720
+  CRON_REVISION_TWITTER: 0 0/1 * 1/1 * ?
   URLSERVIDORCANCIONES: http://localhost:8080/songs/
   DISCRETIZAR_RANKING: 10
   DISCRETIZAR_SEMANAS: 10
   DISCRETIZAR_VISUALIZACIONES: 10
   DISCRETIZAR_VALORACION: 3
+  EMOCION_POSITIVA: Emocion Positiva
+  EMOCION_NEUTRAL: Emocion Neutral
+  EMOCION_NEGATIVA: Emocion Negativa
 
 # Spring properties
 spring:  

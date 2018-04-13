@@ -25,4 +25,5 @@ import java.util.List;
  */
 public interface PlaylistaRepositorio {
     public List<PlaylistaDTO> listarCancionesUsuario(Integer usuario);
+    public List<PlaylistaDTO> listarCancionesRecomendadas(List<Integer> lista);
 }

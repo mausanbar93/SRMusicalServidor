@@ -39,10 +39,24 @@ public class PlaylistaRepositorioImpl implements PlaylistaRepositorio {
                 .createSQLQuery("SELECT\n"
                         + "  c.id AS id, c.artista AS artista, c.titulo AS titulo, c.letra AS letra, c.duracion_segundo AS duracion, c.valoracion_referencia AS valoracion, e.nombre AS estado\n"
                         + "FROM cancion c\n"
-                        + "  JOIN cancion_usuario_valoracion cuv ON cuv.cancion=c.id\n"
-                        + "  JOIN estado e ON e.id=c.estado_referencia\n"
-                        + "  WHERE cuv.usuario=:usuario")
+                        + "JOIN cancion_usuario_valoracion cuv ON cuv.cancion=c.id\n"
+                        + "JOIN estado e ON e.id=c.estado_referencia\n"
+                        + "WHERE cuv.usuario=:usuario")
                 .setParameter("usuario", usuario)
+                .setResultTransformer(org.hibernate.transform.Transformers.aliasToBean(PlaylistaDTO.class))
+                .list();
+        return retorno;
+    }
+
+    @Override
+    public List<PlaylistaDTO> listarCancionesRecomendadas(List<Integer> lista) {
+        List<PlaylistaDTO> retorno = em.unwrap(org.hibernate.Session.class)
+                .createSQLQuery("SELECT\n"
+                        + "  c.id AS id, c.artista AS artista, c.titulo AS titulo, c.letra AS letra, c.duracion_segundo AS duracion, c.valoracion_referencia AS valoracion, e.nombre AS estado\n"
+                        + "FROM cancion c\n"
+                        + "JOIN estado e ON e.id=c.estado_referencia\n"
+                        + "WHERE c.id IN (:lista)")
+                .setParameterList("lista", lista)
                 .setResultTransformer(org.hibernate.transform.Transformers.aliasToBean(PlaylistaDTO.class))
                 .list();
         return retorno;

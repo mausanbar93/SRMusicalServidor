@@ -21,7 +21,7 @@ public class PlaylistaServicio {
 
     @Value("${constantes.URLSERVIDORCANCIONES}")
     private String URLSERVIDORCANCIONES;
-    
+
     @Autowired
     private PlaylistaRepositorio playlistarepositorio;
 
@@ -29,12 +29,25 @@ public class PlaylistaServicio {
         try {
             List<PlaylistaDTO> respuesta = playlistarepositorio.listarCancionesUsuario(usuario);
             if (respuesta.size() > 0) {
-                for(PlaylistaDTO playlistaDTO: respuesta){
-                    playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES+playlistaDTO.getEstado()+"/"+playlistaDTO.getId()+".mp3");
-                }
-//                respuesta.forEach((playlistaDTO) -> {
-//                    playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES+playlistaDTO.getEstado()+"/"+playlistaDTO.getId()+".mp3");
-//                });
+                respuesta.forEach((playlistaDTO) -> {
+                    playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES + playlistaDTO.getEstado() + "/" + playlistaDTO.getId() + ".mp3");
+                });
+                return respuesta;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public List<PlaylistaDTO> listarCancionesRecomendadas(List<Integer> lista) {
+        try {
+            List<PlaylistaDTO> respuesta = playlistarepositorio.listarCancionesRecomendadas(lista);
+            if (respuesta.size() > 0) {
+                respuesta.forEach((playlistaDTO) -> {
+                    playlistaDTO.setUrlAudio(URLSERVIDORCANCIONES + playlistaDTO.getEstado() + "/" + playlistaDTO.getId() + ".mp3");
+                });
                 return respuesta;
             } else {
                 return null;
